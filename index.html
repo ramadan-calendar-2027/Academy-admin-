@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prime Skill Academy — Admin Panel</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #0b1120; color: #f8fafc;
+    font-family: "Segoe UI", Arial, "Noto Sans Bengali", sans-serif;
+  }
+  header {
+    background: #0f172a; border-bottom: 1px solid #1e293b;
+    padding: 15px 18px; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 30;
+  }
+  header h2 { margin: 0; font-size: 19px; color: #38bdf8; }
+  .menu-btn {
+    background: #1e293b; border: 1px solid #334155; color: #f8fafc;
+    font-size: 20px; padding: 6px 12px; border-radius: 10px; cursor: pointer;
+  }
+
+  .drawer {
+    position: fixed; top: 62px; right: 14px; width: 245px;
+    background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+    padding: 10px; box-shadow: 0 12px 30px rgba(0,0,0,0.5); z-index: 40;
+  }
+  .drawer button {
+    display: block; width: 100%; text-align: left; background: transparent;
+    border: none; color: #f1f5f9; padding: 11px 12px; border-radius: 9px;
+    font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 4px;
+  }
+  .drawer button:hover, .drawer button.active { background: #2563eb; color: white; }
+
+  .wrap { max-width: 1000px; margin: auto; padding: 16px; }
+  .hidden { display: none !important; }
+  .card {
+    background: #0f172a; border: 1px solid #1e293b;
+    border-radius: 16px; padding: 18px; margin-bottom: 16px;
+  }
+  h3 { margin: 0 0 12px; color: #e2e8f0; }
+  label { display: block; font-size: 13px; color: #94a3b8; margin: 10px 0 4px; }
+  input {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1px solid #334155; background: #020617; color: #f8fafc; font-size: 14px;
+  }
+  .btn {
+    padding: 11px 16px; border: none; border-radius: 10px;
+    background: #2563eb; color: white; font-weight: 700; cursor: pointer; font-size: 14px;
+  }
+  .btn-green { background: #059669; }
+  .btn-red { background: #dc2626; }
+  .btn-amber { background: #d97706; }
+
+  .notif-bar {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .notif-status { font-size: 13px; color: #cbd5e1; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; }
+  .app-box {
+    background: #131c31; border: 1px solid #26334d;
+    border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+  .info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .info-table td { padding: 5px 4px; border-bottom: 1px solid #1e293b; vertical-align: top; }
+  .info-table td:first-child { color: #94a3b8; width: 42%; }
+
+  .doc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+  .doc-thumb {
+    background: #0b1120; border: 1px solid #334155; border-radius: 8px;
+    padding: 5px; text-align: center; font-size: 10.5px; color: #cbd5e1;
+  }
+  .doc-thumb img {
+    width: 100%; height: 72px; object-fit: cover; border-radius: 6px;
+    display: block; margin-bottom: 4px; cursor: pointer; background: #1e293b;
+  }
+
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    display: grid; place-items: center; z-index: 90; padding: 16px;
+  }
+  .modal img { max-width: 100%; max-height: 85vh; border-radius: 12px; border: 2px solid #38bdf8; background: #0f172a; }
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Prime Skill Academy — Admin</h2>
+  <button id="threeLineBtn" class="menu-btn hidden" onclick="toggleDrawer()">☰</button>
+</header>
+
+<div id="adminDrawer" class="drawer hidden">
+  <button id="mPayReq" class="active" onclick="showAdminSection('payReqSection')">💳 পেমেন্ট রিকোয়েস্ট</button>
+  <button id="mStudents" onclick="showAdminSection('studentsSection')">🎓 সকল স্টুডেন্ট তথ্য</button>
+  <button id="mVideos" onclick="showAdminSection('videosSection')">🎬 প্লেলিস্ট ও লাইভ ক্লাস সেটআপ</button>
+  <button id="mResets" onclick="showAdminSection('resetsSection')">🔑 পাসওয়ার্ড রিকোয়েস্ট</button>
+  <button id="mPosts" onclick="showAdminSection('postsSection')">📢 লাইভ নোটিশ পাঠান</button>
+  <button style="color:#f87171" onclick="adminLogout()">🚪 লগআউট</button>
+</div>
+
+<div class="wrap">
+  <div id="adminLoginCard" class="card" style="max-width:420px;margin:40px auto">
+    <h3>অ্যাডমিন লগইন</h3>
+    <p style="font-size:13.5px;color:#94a3b8">অ্যাডমিন প্যানেলে প্রবেশ করতে পাসওয়ার্ড দিন (ডিফল্ট: <b>admin123</b>)</p>
+    <input id="adminPassInput" type="password" placeholder="অ্যাডমিন পাসওয়ার্ড" autocomplete="current-password">
+    <button class="btn" style="width:100%;margin-top:12px" onclick="adminLogin()">লগইন করুন</button>
+    <p id="adminLoginMsg" style="color:#f87171;font-size:13px"></p>
+  </div>
+
+  <div id="adminMain" class="hidden">
+    <div class="notif-bar">
+      <div id="notifStatusText" class="notif-status">🔔 ফোনের নোটিফিকেশন যাচাই করা হচ্ছে...</div>
+      <div style="display:flex;gap:8px">
+        <button id="enableNotifBtn" class="btn btn-amber" onclick="requestPhoneNotification(true)">🔔 নোটিফিকেশন চালু করুন</button>
+        <button class="btn" onclick="playAlertSound(); triggerPhoneNotification('টেস্ট নোটিফিকেশন', 'নতুন রিকোয়েস্ট আসলে এভাবে ফোনে নোটিফিকেশন আসবে।', 'payReqSection')">টেস্ট</button>
+      </div>
+    </div>
+
+    <section id="payReqSection">
+      <div class="card">
+        <h3>💳 পেমেন্ট রিকোয়েস্ট ও অ্যাকাউন্ট অ্যাক্টিভেশন</h3>
+        <p style="font-size:13.5px;color:#94a3b8;margin-bottom:14px">কাস্টমারের পেমেন্ট তথ্য যাচাই করে ইউজারনেম ও পাসওয়ার্ড সেট করে অ্যাক্টিভ করে দিন।</p>
+        <div id="pendingAppsGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="studentsSection" class="hidden">
+      <div class="card">
+        <h3>🎓 অনুমোদিত ও সকল স্টুডেন্টের বিস্তারিত তথ্য</h3>
+        <div id="allStudentsGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="videosSection" class="hidden">
+      <div class="card">
+        <h3>🎬 কোর্স প্লেলিস্ট ও লাইভ ক্লাস সরাসরি সেটআপ</h3>
+        <p style="font-size:13.5px;color:#94a3b8">প্রতিটি কোর্সের জন্য ইউটিউব প্লেলিস্টের লিংক বসান। স্টুডেন্ট অ্যাক্টিভ হওয়ার পর থেকে ৩০ দিন ধরে প্রতি ২৪ ঘণ্টা পরপর প্লেলিস্টের ক্লাস একটার পর একটা চালু হবে।</p>
+
+        <label>🔴 ফ্রি লাইভ ক্লাস সরাসরি লিংক (প্রতিদিন রাত ৮:০০ টার জন্য)</label>
+        <input id="vidLive" type="text" placeholder="https://www.youtube.com/watch?v=...">
+
+        <label>🎨 গ্রাফিক্স ডিজাইন ফর ফ্রিল্যান্সার — ইউটিউব প্লেলিস্ট লিংক (৩০ দিনের লাইভ ক্লাস সরাসরি)</label>
+        <input id="plGraphic" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+
+        <label>💻 কম্পিউটার বেসিক থেকে এডভান্স — ইউটিউব প্লেলিস্ট লিংক (৩০ দিনের লাইভ ক্লাস সরাসরি)</label>
+        <input id="plBasic" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+
+        <label>📊 অফিস কোর্স — ইউটিউব প্লেলিস্ট লিংক (৩০ দিনের লাইভ ক্লাস সরাসরি)</label>
+        <input id="plOffice" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+
+        <button class="btn btn-green" style="margin-top:14px" onclick="savePlaylistLinks()">প্লেলিস্ট ও লাইভ ক্লাস লিংক সংরক্ষণ করুন</button>
+        <p id="vidSaveMsg" style="color:#34d399;font-size:13.5px;margin-top:8px"></p>
+      </div>
+    </section>
+
+    <section id="resetsSection" class="hidden">
+      <div class="card">
+        <h3>🔑 পাসওয়ার্ড ভুলে যাওয়ার রিকোয়েস্ট</h3>
+        <div id="resetListGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="postsSection" class="hidden">
+      <div class="card">
+        <h3>📢 ইউজার পেজে লাইভ নোটিশ / আপডেট পাঠাও</h3>
+        <input id="msgInput" type="text" placeholder="মেসেজ বা তথ্য লেখো...">
+        <button class="btn btn-green" style="margin-top:12px" onclick="sendData()">পাঠাও</button>
+        <p id="status" style="color:#34d399;font-size:13.5px;margin-top:8px"></p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="imgModal" class="modal hidden" onclick="this.classList.add('hidden')">
+  <img id="modalImg" src="" alt="Document Preview">
+</div>
+
+<script>
+const DB_URL = "https://crime-skill-academy-default-rtdb.firebaseio.com";
+const ADMIN_PASS = 'admin123';
+const STORE_APPS_KEY = 'psa_local_apps_v6';
+const STORE_RESETS_KEY = 'psa_local_resets_v6';
+const STORE_SETTINGS_KEY = 'psa_local_settings_v6';
+const SEEN_APPS_KEY = 'psa_seen_app_keys_v1';
+const SEEN_RESETS_KEY = 'psa_seen_reset_keys_v1';
+
+const docImageMap = {};
+
+function makeThumbFallback(label) {
+  try {
+    const c = document.createElement('canvas');
+    c.width = 240;
+    c.height = 140;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 0, 240, 140);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label || 'Image', 120, 75);
+    return c.toDataURL('image/jpeg', 0.7);
+  } catch (_) {
+    return '';
+  }
+}
+
+const THUMB_FALLBACK = makeThumbFallback('Document');
+
+let isLogged = false;
+let applications = [];
+let resetReqs = [];
+let syncTimer = null;
+let lastAppsSignature = '';
+let lastResetsSignature = '';
+let pendingDeferredRender = false;
+let initialCloudLoaded = false;
+
+let seenAppKeys = new Set(JSON.parse(localStorage.getItem(SEEN_APPS_KEY) || '[]'));
+let seenResetKeys = new Set(JSON.parse(localStorage.getItem(SEEN_RESETS_KEY) || '[]'));
+
+function saveSeenSets() {
+  try {
+    localStorage.setItem(SEEN_APPS_KEY, JSON.stringify([...seenAppKeys]));
+    localStorage.setItem(SEEN_RESETS_KEY, JSON.stringify([...seenResetKeys]));
+  } catch (_) {}
+}
+
+function updateNotifBadge() {
+  const el = document.getElementById('notifStatusText');
+  const btn = document.getElementById('enableNotifBtn');
+  if (!el || !btn) return;
+
+  if (!('Notification' in window)) {
+    el.innerHTML = '⚠️ এই ব্রাউজারে সিস্টেম নোটিফিকেশন সাপোর্ট নেই; পেজ খোলা থাকলে অ্যালার্ট সাউন্ড বাজবে।';
+    btn.classList.add('hidden');
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    el.innerHTML = '✅ <b style="color:#34d399">ফোনের নোটিফিকেশন চালু আছে!</b> নতুন রিকোয়েস্ট এলে অ্যালার্ট আসবে।';
+    btn.classList.add('hidden');
+  } else if (Notification.permission === 'denied') {
+    el.innerHTML = '❌ নোটিফিকেশন ব্লক করা আছে। ব্রাউজার/ফোন সেটিংস থেকে এই সাইটের Notification অনুমতি দিন।';
+    btn.classList.remove('hidden');
+  } else {
+    el.innerHTML = '🔔 নতুন রিকোয়েস্টের নোটিফিকেশন পেতে নিচের বাটনে চাপ দিন।';
+    btn.classList.remove('hidden');
+  }
+}
+
+async function requestPhoneNotification(showAlertIfDenied = false) {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    try {
+      await Notification.requestPermission();
+    } catch (_) {}
+  }
+  updateNotifBadge();
+  if (showAlertIfDenied && Notification.permission === 'denied') {
+    alert('ফোন বা ব্রাউজারের Settings > Notifications থেকে অনুমতি দিন।');
+  }
+}
+
+function playAlertSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1174, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.36);
+  } catch (_) {}
+}
+
+function triggerPhoneNotification(title, body, targetSection) {
+  playAlertSound();
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification(title, {
+          body,
+          vibrate: [200, 100, 200],
+          tag: 'psa-admin-' + Date.now()
+        }).catch(() => {
+          const n = new Notification(title, { body });
+          n.onclick = () => { window.focus(); if (targetSection) showAdminSection(targetSection); };
+        });
+      }).catch(() => {
+        const n = new Notification(title, { body });
+        n.onclick = () => { window.focus(); if (targetSection) showAdminSection(targetSection); };
+      });
+    } else {
+      const n = new Notification(title, { body });
+      n.onclick = () => { window.focus(); if (targetSection) showAdminSection(targetSection); };
+    }
+  } catch (_) {}
+}
+
+function detectNewRequestsAndNotify(freshApps, freshResets) {
+  if (!initialCloudLoaded) {
+    freshApps.forEach(a => { if (a._key) seenAppKeys.add(a._key); });
+    freshResets.forEach(r => { if (r._key) seenResetKeys.add(r._key); });
+    saveSeenSets();
+    initialCloudLoaded = true;
+    return;
+  }
+
+  const newPendingApps = freshApps.filter(a => a._key && a.status !== 'approved' && !seenAppKeys.has(a._key));
+  const newPendingResets = freshResets.filter(r => r._key && r.status !== 'done' && !seenResetKeys.has(r._key));
+
+  freshApps.forEach(a => { if (a._key) seenAppKeys.add(a._key); });
+  freshResets.forEach(r => { if (r._key) seenResetKeys.add(r._key); });
+  saveSeenSets();
+
+  if (newPendingApps.length) {
+    const first = newPendingApps[0];
+    const msg = newPendingApps.length === 1
+      ? `${first.studentName || 'নতুন স্টুডেন্ট'} — ${first.courseTitle || 'কোর্স'} (${first.paymentMethod || ''} ${first.senderPhone || ''})`
+      : `${newPendingApps.length}টি নতুন কোর্স ও পেমেন্ট রিকোয়েস্ট এসেছে!`;
+    triggerPhoneNotification('💳 নতুন পেমেন্ট রিকোয়েস্ট!', msg, 'payReqSection');
+  }
+
+  if (newPendingResets.length) {
+    const firstR = newPendingResets[0];
+    const rMsg = newPendingResets.length === 1
+      ? `ইউজারনেম: ${firstR.username || 'ইউজার'} নতুন পাসওয়ার্ড চেয়েছে।`
+      : `${newPendingResets.length}টি নতুন পাসওয়ার্ড রিসেট রিকোয়েস্ট এসেছে!`;
+    triggerPhoneNotification('🔑 পাসওয়ার্ড রিকোয়েস্ট!', rMsg, 'resetsSection');
+  }
+}
+
+function isUserTypingInInput() {
+  const active = document.activeElement;
+  if (!active) return false;
+  const tag = active.tagName ? active.tagName.toLowerCase() : '';
+  return tag === 'input' || tag === 'textarea' || tag === 'select';
+}
+
+document.addEventListener('focusout', () => {
+  if (pendingDeferredRender && isLogged) {
+    setTimeout(() => {
+      if (!isUserTypingInInput() && pendingDeferredRender) {
+        pendingDeferredRender = false;
+        renderAdminUI(true);
+        renderResetRequests(true);
+      }
+    }, 120);
+  }
+});
+
+function getLocalApps() { return JSON.parse(localStorage.getItem(STORE_APPS_KEY) || '[]'); }
+function saveLocalApps(list) {
+  try {
+    localStorage.setItem(STORE_APPS_KEY, JSON.stringify(list));
+  } catch (_) {
+    const lightList = list.map(item => ({
+      ...item,
+      studentNidFront: '',
+      studentNidBack: '',
+      motherNidFront: '',
+      motherNidBack: '',
+      certificateImg: ''
+    }));
+    try { localStorage.setItem(STORE_APPS_KEY, JSON.stringify(lightList)); } catch (_) {}
+  }
+}
+function getLocalResets() { return JSON.parse(localStorage.getItem(STORE_RESETS_KEY) || '[]'); }
+function saveLocalResets(list) {
+  try { localStorage.setItem(STORE_RESETS_KEY, JSON.stringify(list)); } catch (_) {}
+}
+
+function adminLogin() {
+  if (document.getElementById('adminPassInput').value !== ADMIN_PASS) {
+    document.getElementById('adminLoginMsg').textContent = 'ভুল পাসওয়ার্ড! সঠিক অ্যাডমিন পাসওয়ার্ড দিন।';
+    return;
+  }
+  isLogged = true;
+  document.getElementById('adminLoginCard').classList.add('hidden');
+  document.getElementById('adminMain').classList.remove('hidden');
+  document.getElementById('threeLineBtn').classList.remove('hidden');
+  updateNotifBadge();
+  requestPhoneNotification(false);
+  startAdminSync();
+}
+
+function adminLogout() {
+  isLogged = false;
+  if (syncTimer) clearInterval(syncTimer);
+  document.getElementById('adminMain').classList.add('hidden');
+  document.getElementById('threeLineBtn').classList.add('hidden');
+  document.getElementById('adminDrawer').classList.add('hidden');
+  document.getElementById('adminLoginCard').classList.remove('hidden');
+  document.getElementById('adminPassInput').value = '';
+}
+
+function toggleDrawer() { document.getElementById('adminDrawer').classList.toggle('hidden'); }
+
+function showAdminSection(secId) {
+  ['payReqSection','studentsSection','videosSection','resetsSection','postsSection'].forEach(id => {
+    document.getElementById(id).classList.toggle('hidden', id !== secId);
+  });
+  document.querySelectorAll('.drawer button').forEach(b => b.classList.remove('active'));
+  if (secId === 'payReqSection') document.getElementById('mPayReq').classList.add('active');
+  if (secId === 'studentsSection') document.getElementById('mStudents').classList.add('active');
+  if (secId === 'videosSection') document.getElementById('mVideos').classList.add('active');
+  if (secId === 'resetsSection') document.getElementById('mResets').classList.add('active');
+  if (secId === 'postsSection') document.getElementById('mPosts').classList.add('active');
+  document.getElementById('adminDrawer').classList.add('hidden');
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function normalizeImageSrc(src) {
+  if (!src || typeof src !== 'string') return '';
+  const s = src.trim();
+  if (!s) return '';
+  if (s.startsWith('data:image/') || s.startsWith('http://') || s.startsWith('https://') || s.startsWith('blob:')) {
+    return s;
+  }
+  if (/^[A-Za-z0-9+/=]+$/.test(s.slice(0, 40))) {
+    return 'data:image/jpeg;base64,' + s;
+  }
+  return '';
+}
+
+function hydrateImagesInDom() {
+  document.querySelectorAll('img[data-doc-id]').forEach(img => {
+    const id = img.getAttribute('data-doc-id');
+    const actualSrc = docImageMap[id];
+    if (!actualSrc) return;
+    img.onerror = function () {
+      if (THUMB_FALLBACK) this.src = THUMB_FALLBACK;
+    };
+    img.src = actualSrc;
+  });
+}
+
+function openDocModal(docId) {
+  const src = docImageMap[docId];
+  if (!src) return;
+  const modalImg = document.getElementById('modalImg');
+  modalImg.onerror = () => { if (THUMB_FALLBACK) modalImg.src = THUMB_FALLBACK; };
+  modalImg.src = src;
+  document.getElementById('imgModal').classList.remove('hidden');
+}
+
+function loadSettingsIntoForm(s) {
+  if (isUserTypingInInput()) return;
+  document.getElementById('vidLive').value = s.liveVideoUrl || '';
+  document.getElementById('plGraphic').value = (s.coursePlaylists && s.coursePlaylists.graphic) || '';
+  document.getElementById('plBasic').value = (s.coursePlaylists && s.coursePlaylists.basic) || '';
+  document.getElementById('plOffice').value = (s.coursePlaylists && s.coursePlaylists.office) || '';
+}
+
+function getAppsSignature(list) {
+  return list.map(x => `${x._key}|${x.status}|${x.assignedUsername || ''}|${x.assignedPassword || ''}|${x.submittedAt || 0}`).join(';;');
+}
+
+function getResetsSignature(list) {
+  return list.map(x => `${x._key}|${x.username}|${x.status}`).join(';;');
+}
+
+async function pullAdminData() {
+  if (!isLogged) return;
+  try {
+    const [appsRes, settingsRes, resetsRes] = await Promise.all([
+      fetch(`${DB_URL}/psa_applications.json`),
+      fetch(`${DB_URL}/psa_settings.json`),
+      fetch(`${DB_URL}/psa_reset_requests.json`)
+    ]);
+
+    let nextApps = applications;
+    let nextResets = resetReqs;
+
+    if (appsRes.ok) {
+      const val = await appsRes.json();
+      nextApps = val
+        ? Object.entries(val).map(([key, item]) => ({ _key: key, ...item })).sort((a,b) => (b.submittedAt||0) - (a.submittedAt||0))
+        : [];
+    }
+
+    if (resetsRes.ok) {
+      const rVal = await resetsRes.json();
+      nextResets = rVal
+        ? Object.entries(rVal).map(([key, item]) => ({ _key: key, ...item })).sort((a,b) => (b.time||0) - (a.time||0))
+        : [];
+    }
+
+    detectNewRequestsAndNotify(nextApps, nextResets);
+
+    if (appsRes.ok) {
+      applications = nextApps;
+      saveLocalApps(applications);
+      const sig = getAppsSignature(applications);
+      if (sig !== lastAppsSignature) {
+        lastAppsSignature = sig;
+        renderAdminUI(false);
+      }
+    }
+
+    if (resetsRes.ok) {
+      resetReqs = nextResets;
+      saveLocalResets(resetReqs);
+      const rSig = getResetsSignature(resetReqs);
+      if (rSig !== lastResetsSignature) {
+        lastResetsSignature = rSig;
+        renderResetRequests(false);
+      }
+    }
+
+    if (settingsRes.ok) {
+      const s = await settingsRes.json();
+      if (s) {
+        try { localStorage.setItem(STORE_SETTINGS_KEY, JSON.stringify(s)); } catch (_) {}
+        loadSettingsIntoForm(s);
+      }
+    }
+  } catch (err) {
+    console.warn('Admin sync error:', err);
+  }
+}
+
+function startAdminSync() {
+  applications = getLocalApps();
+  resetReqs = getLocalResets();
+  lastAppsSignature = getAppsSignature(applications);
+  lastResetsSignature = getResetsSignature(resetReqs);
+  loadSettingsIntoForm(JSON.parse(localStorage.getItem(STORE_SETTINGS_KEY) || '{}'));
+  renderAdminUI(true);
+  renderResetRequests(true);
+  pullAdminData();
+  if (syncTimer) clearInterval(syncTimer);
+  syncTimer = setInterval(pullAdminData, 3000);
+}
+
+function buildDocThumb(rawSrc, docId, label) {
+  const valid = normalizeImageSrc(rawSrc);
+  if (!valid) return '';
+  docImageMap[docId] = valid;
+  return `<div class="doc-thumb"><img data-doc-id="${esc(docId)}" src="${THUMB_FALLBACK}" onclick="openDocModal('${esc(docId)}')">${esc(label)}</div>`;
+}
+
+function buildAppCard(a) {
+  const isApproved = a.status === 'approved';
+  const baseKey = a._key || ('APP_' + Math.random().toString(36).slice(2, 8));
+  const docsHtml = [
+    buildDocThumb(a.studentNidFront, baseKey + '_snf', 'স্টুডেন্ট NID (১)'),
+    buildDocThumb(a.studentNidBack, baseKey + '_snb', 'স্টুডেন্ট NID (২)'),
+    buildDocThumb(a.motherNidFront, baseKey + '_mnf', 'মাতার NID (১)'),
+    buildDocThumb(a.motherNidBack, baseKey + '_mnb', 'মাতার NID (২)'),
+    buildDocThumb(a.certificateImg, baseKey + '_cert', 'সার্টিফিকেট')
+  ].filter(Boolean).join('');
+
+  return `
+    <div class="app-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="badge" style="background:${isApproved?'rgba(16,185,129,0.2)':'rgba(245,158,11,0.2)'};color:${isApproved?'#34d399':'#fbbf24'}">
+          ${isApproved ? '✓ Active (৩০ দিন চলমান)' : '⏳ Pending Payment'}
+        </span>
+        <span style="font-size:12px;color:#38bdf8;font-weight:700">${esc(a.courseFeeText)}</span>
+      </div>
+
+      <div style="font-weight:700;font-size:15.5px;color:#f8fafc">${esc(a.courseTitle)}</div>
+
+      <div style="background:#0b1120;border:1px solid #26334d;border-radius:10px;padding:10px;font-size:13px">
+        <div>💳 পেমেন্ট মাধ্যম: <b style="color:#fbbf24">${esc(a.paymentMethod)}</b></div>
+        <div>📱 প্রেরকের নম্বর: <b style="color:#38bdf8">${esc(a.senderPhone)}</b></div>
+        <div>🧾 TrxID: <b style="color:#34d399">${esc(a.trxId)}</b></div>
+      </div>
+
+      <table class="info-table">
+        <tr><td>স্টুডেন্টের নাম</td><td><b>${esc(a.studentName)}</b></td></tr>
+        <tr><td>পিতার নাম</td><td>${esc(a.fatherName)}</td></tr>
+        <tr><td>মাতার নাম</td><td>${esc(a.motherName)}</td></tr>
+        <tr><td>জন্ম তারিখ</td><td>${esc(a.dob)}</td></tr>
+        <tr><td>স্টুডেন্ট NID</td><td>${esc(a.studentNid)}</td></tr>
+        <tr><td>মাতার NID</td><td>${esc(a.motherNid)}</td></tr>
+        <tr><td>স্টুডেন্ট ফোন</td><td>${esc(a.studentPhone)}</td></tr>
+        <tr><td>গার্জিয়ান ফোন</td><td>${esc(a.guardianPhone)}</td></tr>
+        <tr><td>এলাকা</td><td>${esc(a.address)}</td></tr>
+        <tr><td>লিঙ্গ ও ক্লাস</td><td>${esc(a.gender)} · ${esc(a.studentClass)}</td></tr>
+      </table>
+
+      ${docsHtml ? `<div class="doc-grid">${docsHtml}</div>` : `<div style="font-size:12px;color:#94a3b8">কোনো ছবি আপলোড করা হয়নি।</div>`}
+
+      <div style="border-top:1px solid #26334d;padding-top:10px;margin-top:4px">
+        <label style="margin-top:0">ইউজারনেম সেট করুন</label>
+        <input id="setUser_${esc(baseKey)}" type="text" value="${esc(a.assignedUsername || '')}">
+        <label>পাসওয়ার্ড সেট করুন</label>
+        <input id="setPass_${esc(baseKey)}" type="text" value="${esc(a.assignedPassword || '')}">
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-green" style="flex:1" onclick="activateStudent('${esc(baseKey)}')">অ্যাক্টিভ ও সেট করুন</button>
+          <button class="btn btn-red" onclick="deleteApplication('${esc(baseKey)}')">মুছুন</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAdminUI(force = false) {
+  if (!isLogged) return;
+  if (!force && isUserTypingInInput()) {
+    pendingDeferredRender = true;
+    return;
+  }
+  const pending = applications.filter(x => x.status !== 'approved');
+  document.getElementById('pendingAppsGrid').innerHTML = pending.length
+    ? pending.map(a => buildAppCard(a)).join('')
+    : '<p style="color:#94a3b8">কোনো নতুন পেমেন্ট রিকোয়েস্ট নেই।</p>';
+
+  document.getElementById('allStudentsGrid').innerHTML = applications.length
+    ? applications.map(a => buildAppCard(a)).join('')
+    : '<p style="color:#94a3b8">এখনো কোনো স্টুডেন্ট আবেদন করেনি।</p>';
+
+  hydrateImagesInDom();
+}
+
+async function activateStudent(key) {
+  const uname = document.getElementById('setUser_' + key).value.trim();
+  const pass = document.getElementById('setPass_' + key).value.trim();
+  if (!uname || !pass) return alert('ইউজারনেম এবং পাসওয়ার্ড লিখুন।');
+
+  const existing = applications.find(x => x._key === key);
+  const activatedAt = (existing && existing.activatedAt) ? existing.activatedAt : Date.now();
+
+  applications = applications.map(item => item._key === key
+    ? { ...item, status: 'approved', assignedUsername: uname, assignedPassword: pass, activatedAt, resetNotice: false }
+    : item
+  );
+  lastAppsSignature = getAppsSignature(applications);
+  saveLocalApps(applications);
+  renderAdminUI(true);
+
+  try {
+    await fetch(`${DB_URL}/psa_applications/${key}.json`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: 'approved',
+        assignedUsername: uname,
+        assignedPassword: pass,
+        activatedAt,
+        resetNotice: false
+      })
+    });
+  } catch (_) {}
+  alert('সফলভাবে অ্যাক্টিভ করা হয়েছে! ইউজারের হোম পেজে ইউজারনেম ও পাসওয়ার্ড চলে গেছে।');
+}
+
+async function deleteApplication(key) {
+  if (!confirm('এই আবেদনটি মুছে ফেলতে চান?')) return;
+  applications = applications.filter(item => item._key !== key);
+  lastAppsSignature = getAppsSignature(applications);
+  saveLocalApps(applications);
+  renderAdminUI(true);
+  try {
+    await fetch(`${DB_URL}/psa_applications/${key}.json`, { method: 'DELETE' });
+  } catch (_) {}
+}
+
+async function savePlaylistLinks() {
+  const settingsData = {
+    liveVideoUrl: document.getElementById('vidLive').value.trim(),
+    coursePlaylists: {
+      graphic: document.getElementById('plGraphic').value.trim(),
+      basic: document.getElementById('plBasic').value.trim(),
+      office: document.getElementById('plOffice').value.trim()
+    }
+  };
+  try { localStorage.setItem(STORE_SETTINGS_KEY, JSON.stringify(settingsData)); } catch (_) {}
+  try {
+    await fetch(`${DB_URL}/psa_settings.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settingsData)
+    });
+  } catch (_) {}
+  document.getElementById('vidSaveMsg').textContent = '✓ সকল প্লেলিস্ট ও লাইভ ক্লাস লিংক সফলভাবে সংরক্ষণ হয়েছে!';
+}
+
+function renderResetRequests(force = false) {
+  if (!force && isUserTypingInInput()) {
+    pendingDeferredRender = true;
+    return;
+  }
+  const grid = document.getElementById('resetListGrid');
+  if (!resetReqs.length) {
+    grid.innerHTML = '<p style="color:#94a3b8">কোনো পাসওয়ার্ড রিকোয়েস্ট নেই।</p>';
+    return;
+  }
+  grid.innerHTML = resetReqs.map(r => `
+    <div class="app-box">
+      <div><b>ইউজারনেম:</b> <span style="color:#38bdf8">${esc(r.username)}</span></div>
+      <div style="font-size:12.5px;color:#94a3b8">অবস্থা: ${r.status === 'done' ? '✓ সমাধান হয়েছে' : '⏳ অপেক্ষমাণ'}</div>
+      <label>নতুন পাসওয়ার্ড দিন</label>
+      <input id="newResetPass_${esc(r._key)}" type="text">
+      <button class="btn btn-green" style="margin-top:8px" onclick="applyNewPassword('${esc(r._key)}', '${esc(r.username)}')">নতুন পাসওয়ার্ড সেট করুন</button>
+    </div>
+  `).join('');
+}
+
+async function applyNewPassword(reqKey, username) {
+  const newPass = document.getElementById('newResetPass_' + reqKey).value.trim();
+  if (!newPass) return alert('নতুন পাসওয়ার্ড লিখুন।');
+
+  applications = applications.map(a => a.assignedUsername === username
+    ? { ...a, assignedPassword: newPass, resetNotice: true }
+    : a
+  );
+  lastAppsSignature = getAppsSignature(applications);
+  saveLocalApps(applications);
+
+  for (const m of applications.filter(a => a.assignedUsername === username)) {
+    try {
+      await fetch(`${DB_URL}/psa_applications/${m._key}.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'approved',
+          assignedPassword: newPass,
+          resetNotice: true
+        })
+      });
+    } catch (_) {}
+  }
+
+  resetReqs = resetReqs.map(r => r._key === reqKey ? { ...r, status: 'done' } : r);
+  lastResetsSignature = getResetsSignature(resetReqs);
+  saveLocalResets(resetReqs);
+  renderResetRequests(true);
+  try {
+    await fetch(`${DB_URL}/psa_reset_requests/${reqKey}.json`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'done' })
+    });
+  } catch (_) {}
+  alert('নতুন পাসওয়ার্ড সেট করা হয়েছে এবং ইউজারের হোম পেজে চলে গেছে!');
+}
+
+async function sendData() {
+  const text = document.getElementById("msgInput").value.trim();
+  const status = document.getElementById("status");
+  if (!text) return;
+
+  try {
+    const res = await fetch(`${DB_URL}/posts.json`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: text,
+        time: new Date().toLocaleString("bn-BD")
+      })
+    });
+
+    if (res.ok) {
+      document.getElementById("msgInput").value = "";
+      status.textContent = "ডাটা পাঠানো হয়েছে!";
+    } else {
+      status.textContent = "সমস্যা হয়েছে, Rules চেক করো।";
+    }
+  } catch (_) {
+    status.textContent = "নেটওয়ার্ক সমস্যা হয়েছে, Rules চেক করো।";
+  }
+}
+</script>
+</body>
+</html>
