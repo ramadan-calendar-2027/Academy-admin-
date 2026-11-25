@@ -21,17 +21,38 @@
   }
   header {
     background: #0f172a; border-bottom: 1px solid #1e293b;
-    padding: 15px 18px; display: flex; align-items: center;
-    justify-content: space-between; position: sticky; top: 0; z-index: 30;
+    padding: 14px 16px; display: flex; align-items: center;
+    justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 30;
   }
-  header h2 { margin: 0; font-size: 19px; color: #38bdf8; }
+  header h2 { margin: 0; font-size: 18px; color: #38bdf8; }
+  .head-actions { display: flex; align-items: center; gap: 8px; }
+  .quick-top-btn {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 11px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #020617;
+  }
+  .quick-top-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #020617; }
   .menu-btn {
-    background: #1e293b; border: 1px solid #334155; color: #f8fafc;
-    font-size: 20px; padding: 6px 12px; border-radius: 10px; cursor: pointer;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    border: 1px solid rgba(147, 197, 253, 0.45);
+    color: #ffffff;
+    font-size: 18px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #1e3a8a;
   }
+  .menu-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e3a8a; }
 
   .drawer {
-    position: fixed; top: 62px; right: 14px; width: 245px;
+    position: fixed; top: 62px; right: 14px; width: 255px;
     background: #1e293b; border: 1px solid #334155; border-radius: 14px;
     padding: 10px; box-shadow: 0 12px 30px rgba(0,0,0,0.5); z-index: 40;
   }
@@ -54,13 +75,26 @@
     width: 100%; padding: 11px 13px; border-radius: 10px;
     border: 1px solid #334155; background: #020617; color: #f8fafc; font-size: 14px;
   }
+  input[type="file"] { padding: 8px; font-size: 12.5px; }
   .btn {
-    padding: 11px 16px; border: none; border-radius: 10px;
-    background: #2563eb; color: white; font-weight: 700; cursor: pointer; font-size: 14px;
+    padding: 11px 16px; border: 1px solid rgba(147, 197, 253, 0.3); border-radius: 11px;
+    background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); color: white;
+    font-weight: 700; cursor: pointer; font-size: 14px; box-shadow: 0 3px 0 #1e3a8a;
   }
-  .btn-green { background: #059669; }
-  .btn-red { background: #dc2626; }
-  .btn-amber { background: #d97706; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e3a8a; }
+  .btn-green {
+    background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+    border-color: rgba(110, 231, 183, 0.35); box-shadow: 0 3px 0 #064e3b;
+  }
+  .btn-green:active { box-shadow: 0 1px 0 #064e3b; }
+  .btn-red {
+    background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+    border-color: rgba(254, 202, 202, 0.35); box-shadow: 0 3px 0 #7f1d1d;
+  }
+  .btn-amber {
+    background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
+    border-color: rgba(253, 230, 138, 0.35); box-shadow: 0 3px 0 #78350f;
+  }
 
   .notif-bar {
     background: rgba(15, 23, 42, 0.95);
@@ -96,6 +130,42 @@
     display: block; margin-bottom: 4px; cursor: pointer; background: #1e293b;
   }
 
+  .syl-preview-img {
+    width: 100%; max-height: 170px; object-fit: contain;
+    border-radius: 10px; background: #020617; border: 1px solid #334155;
+  }
+
+  .chat-thread-card {
+    background: #131c31;
+    border: 1px solid #26334d;
+    border-radius: 15px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .chat-log {
+    max-height: 240px;
+    overflow-y: auto;
+    background: #090f1d;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .c-msg {
+    padding: 8px 11px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: 88%;
+    white-space: pre-line;
+  }
+  .c-user { align-self: flex-end; background: #2563eb; color: #fff; }
+  .c-bot { align-self: flex-start; background: #1e293b; color: #cbd5e1; }
+  .c-admin { align-self: flex-start; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #ecfdf5; }
+
   .modal {
     position: fixed; inset: 0; background: rgba(0,0,0,0.9);
     display: grid; place-items: center; z-index: 90; padding: 16px;
@@ -107,12 +177,18 @@
 
 <header>
   <h2>Prime Skill Academy — Admin</h2>
-  <button id="threeLineBtn" class="menu-btn hidden" onclick="toggleDrawer()">☰</button>
+  <div id="adminQuickBar" class="head-actions hidden">
+    <button class="quick-top-btn" onclick="showAdminSection('chatsSection')">💬 চ্যাট উত্তর</button>
+    <button class="quick-top-btn" onclick="showAdminSection('syllabusSection')">📘 সিলেবাস</button>
+    <button id="threeLineBtn" class="menu-btn" onclick="toggleDrawer()">☰</button>
+  </div>
 </header>
 
 <div id="adminDrawer" class="drawer hidden">
   <button id="mPayReq" class="active" onclick="showAdminSection('payReqSection')">💳 পেমেন্ট রিকোয়েস্ট</button>
   <button id="mStudents" onclick="showAdminSection('studentsSection')">🎓 সকল স্টুডেন্ট তথ্য</button>
+  <button id="mSyllabus" onclick="showAdminSection('syllabusSection')">📘 সিলেবাস আপডেট</button>
+  <button id="mChats" onclick="showAdminSection('chatsSection')">💬 লাইভ চ্যাট</button>
   <button id="mVideos" onclick="showAdminSection('videosSection')">🎬 প্লেলিস্ট ও লাইভ ক্লাস সেটআপ</button>
   <button id="mResets" onclick="showAdminSection('resetsSection')">🔑 পাসওয়ার্ড রিকোয়েস্ট</button>
   <button id="mPosts" onclick="showAdminSection('postsSection')">📢 লাইভ নোটিশ পাঠান</button>
@@ -149,6 +225,34 @@
       <div class="card">
         <h3>🎓 অনুমোদিত ও সকল স্টুডেন্টের বিস্তারিত তথ্য</h3>
         <div id="allStudentsGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="syllabusSection" class="hidden">
+      <div class="card">
+        <h3>📘 সিলেবাস আপডেট</h3>
+        <p style="font-size:13.5px;color:#94a3b8">সিলেবাসের নাম ও ইমেজ ফাইল যুক্ত করলে ইউজার প্যানেলের "সিলেবাস" পেজে দেখা যাবে।</p>
+        <label>সিলেবাসের নাম</label>
+        <input id="sylTitleInput" type="text" placeholder="যেমন: গ্রাফিক্স ডিজাইন ফর ফ্রিল্যান্সার সিলেবাস">
+
+        <label>আপলোড ফাইল (ইমেজ সেট করুন)</label>
+        <input id="sylFileInput" type="file" accept="image/*">
+
+        <button class="btn btn-green" style="margin-top:14px" onclick="saveSyllabusItem()">সিলেবাস সংরক্ষণ করুন</button>
+        <p id="sylSaveMsg" style="color:#34d399;font-size:13.5px;margin-top:8px"></p>
+      </div>
+
+      <div class="card">
+        <h3>📚 সংরক্ষিত সিলেবাসসমূহ</h3>
+        <div id="adminSyllabusGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="chatsSection" class="hidden">
+      <div class="card">
+        <h3>💬 ইউজার ও বট লাইভ চ্যাট</h3>
+        <p style="font-size:13.5px;color:#94a3b8">ইউজাররা কী প্রশ্ন করছে তা এখানে দেখুন এবং সরাসরি উত্তর দিন।</p>
+        <div id="adminChatsList"></div>
       </div>
     </section>
 
@@ -202,6 +306,7 @@ const ADMIN_PASS = 'admin123';
 const STORE_APPS_KEY = 'psa_local_apps_v6';
 const STORE_RESETS_KEY = 'psa_local_resets_v6';
 const STORE_SETTINGS_KEY = 'psa_local_settings_v6';
+const STORE_SYLLABUS_KEY = 'psa_local_syllabus_v1';
 const SEEN_APPS_KEY = 'psa_seen_app_keys_v1';
 const SEEN_RESETS_KEY = 'psa_seen_reset_keys_v1';
 
@@ -230,9 +335,13 @@ const THUMB_FALLBACK = makeThumbFallback('Document');
 let isLogged = false;
 let applications = [];
 let resetReqs = [];
+let syllabusList = [];
+let allChatThreads = {};
 let syncTimer = null;
 let lastAppsSignature = '';
 let lastResetsSignature = '';
+let lastSyllabusSignature = '';
+let lastChatsSignature = '';
 let pendingDeferredRender = false;
 let initialCloudLoaded = false;
 
@@ -382,6 +491,7 @@ document.addEventListener('focusout', () => {
         pendingDeferredRender = false;
         renderAdminUI(true);
         renderResetRequests(true);
+        renderAdminChats(true);
       }
     }, 120);
   }
@@ -394,11 +504,7 @@ function saveLocalApps(list) {
   } catch (_) {
     const lightList = list.map(item => ({
       ...item,
-      studentNidFront: '',
-      studentNidBack: '',
-      motherNidFront: '',
-      motherNidBack: '',
-      certificateImg: ''
+      studentNidFront: '', studentNidBack: '', motherNidFront: '', motherNidBack: '', certificateImg: ''
     }));
     try { localStorage.setItem(STORE_APPS_KEY, JSON.stringify(lightList)); } catch (_) {}
   }
@@ -416,7 +522,7 @@ function adminLogin() {
   isLogged = true;
   document.getElementById('adminLoginCard').classList.add('hidden');
   document.getElementById('adminMain').classList.remove('hidden');
-  document.getElementById('threeLineBtn').classList.remove('hidden');
+  document.getElementById('adminQuickBar').classList.remove('hidden');
   updateNotifBadge();
   requestPhoneNotification(false);
   startAdminSync();
@@ -426,7 +532,7 @@ function adminLogout() {
   isLogged = false;
   if (syncTimer) clearInterval(syncTimer);
   document.getElementById('adminMain').classList.add('hidden');
-  document.getElementById('threeLineBtn').classList.add('hidden');
+  document.getElementById('adminQuickBar').classList.add('hidden');
   document.getElementById('adminDrawer').classList.add('hidden');
   document.getElementById('adminLoginCard').classList.remove('hidden');
   document.getElementById('adminPassInput').value = '';
@@ -435,12 +541,14 @@ function adminLogout() {
 function toggleDrawer() { document.getElementById('adminDrawer').classList.toggle('hidden'); }
 
 function showAdminSection(secId) {
-  ['payReqSection','studentsSection','videosSection','resetsSection','postsSection'].forEach(id => {
+  ['payReqSection','studentsSection','syllabusSection','chatsSection','videosSection','resetsSection','postsSection'].forEach(id => {
     document.getElementById(id).classList.toggle('hidden', id !== secId);
   });
   document.querySelectorAll('.drawer button').forEach(b => b.classList.remove('active'));
   if (secId === 'payReqSection') document.getElementById('mPayReq').classList.add('active');
   if (secId === 'studentsSection') document.getElementById('mStudents').classList.add('active');
+  if (secId === 'syllabusSection') document.getElementById('mSyllabus').classList.add('active');
+  if (secId === 'chatsSection') document.getElementById('mChats').classList.add('active');
   if (secId === 'videosSection') document.getElementById('mVideos').classList.add('active');
   if (secId === 'resetsSection') document.getElementById('mResets').classList.add('active');
   if (secId === 'postsSection') document.getElementById('mPosts').classList.add('active');
@@ -496,18 +604,217 @@ function loadSettingsIntoForm(s) {
 function getAppsSignature(list) {
   return list.map(x => `${x._key}|${x.status}|${x.assignedUsername || ''}|${x.assignedPassword || ''}|${x.submittedAt || 0}`).join(';;');
 }
-
 function getResetsSignature(list) {
   return list.map(x => `${x._key}|${x.username}|${x.status}`).join(';;');
+}
+function getSyllabusSignature(list) {
+  return list.map(x => `${x._key}|${x.title || ''}|${x.updatedAt || 0}`).join(';;');
+}
+function getChatsSignature(obj) {
+  if (!obj) return '';
+  return Object.entries(obj).map(([tid, msgs]) => {
+    const arr = msgs ? Object.entries(msgs) : [];
+    return tid + ':' + arr.map(([mk, mv]) => `${mk}|${mv.sender}|${mv.text}`).join(',');
+  }).join(';;');
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve) => {
+    if (!file) return resolve('');
+    try {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    } catch (_) {
+      resolve('');
+    }
+  });
+}
+
+async function compressSyllabusImage(file) {
+  const raw = await readFileAsDataUrl(file);
+  if (!raw) return '';
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const maxSide = 720;
+        const w = img.naturalWidth || img.width || maxSide;
+        const h = img.naturalHeight || img.height || maxSide;
+        const scale = Math.min(1, maxSide / Math.max(w, h));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(w * scale));
+        canvas.height = Math.max(1, Math.round(h * scale));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.65) || raw);
+      } catch (_) {
+        resolve(raw);
+      }
+    };
+    img.onerror = () => resolve(raw);
+    img.src = raw;
+  });
+}
+
+async function saveSyllabusItem() {
+  const titleInput = document.getElementById('sylTitleInput');
+  const fileInput = document.getElementById('sylFileInput');
+  const msgEl = document.getElementById('sylSaveMsg');
+
+  const title = titleInput.value.trim();
+  if (!title) return alert('সিলেবাসের নাম লিখুন।');
+
+  const imgData = await compressSyllabusImage(fileInput.files[0]);
+  const key = 'SYL_' + Date.now();
+  const item = {
+    title,
+    image: imgData,
+    updatedAt: Date.now()
+  };
+
+  syllabusList.unshift({ _key: key, ...item });
+  lastSyllabusSignature = getSyllabusSignature(syllabusList);
+  try { localStorage.setItem(STORE_SYLLABUS_KEY, JSON.stringify(syllabusList)); } catch (_) {}
+  renderAdminSyllabus();
+
+  try {
+    await fetch(`${DB_URL}/psa_syllabus/${key}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item)
+    });
+  } catch (_) {}
+
+  titleInput.value = '';
+  fileInput.value = '';
+  msgEl.textContent = '✓ সিলেবাস সফলভাবে আপডেট করা হয়েছে!';
+}
+
+async function deleteSyllabusItem(key) {
+  if (!confirm('এই সিলেবাসটি মুছে ফেলতে চান?')) return;
+  syllabusList = syllabusList.filter(x => x._key !== key);
+  lastSyllabusSignature = getSyllabusSignature(syllabusList);
+  try { localStorage.setItem(STORE_SYLLABUS_KEY, JSON.stringify(syllabusList)); } catch (_) {}
+  renderAdminSyllabus();
+  try {
+    await fetch(`${DB_URL}/psa_syllabus/${key}.json`, { method: 'DELETE' });
+  } catch (_) {}
+}
+
+function renderAdminSyllabus() {
+  const grid = document.getElementById('adminSyllabusGrid');
+  if (!grid) return;
+  if (!syllabusList.length) {
+    grid.innerHTML = '<p style="color:#94a3b8">কোনো সিলেবাস সংরক্ষিত নেই।</p>';
+    return;
+  }
+  grid.innerHTML = syllabusList.map(item => `
+    <div class="app-box">
+      <div style="font-weight:700;font-size:15px;color:#38bdf8">📘 ${esc(item.title)}</div>
+      ${item.image ? `<img class="syl-preview-img" src="${item.image}" alt="${esc(item.title)}" onclick="openDocModal('${esc(item._key)}')">` : '<div style="font-size:12px;color:#94a3b8">কোনো ইমেজ নেই</div>'}
+      <button class="btn btn-red" onclick="deleteSyllabusItem('${esc(item._key)}')">মুছুন</button>
+    </div>
+  `).join('');
+  syllabusList.forEach(item => {
+    if (item.image) docImageMap[item._key] = item.image;
+  });
+}
+
+function renderAdminChats(force = false) {
+  if (!force && isUserTypingInInput()) {
+    pendingDeferredRender = true;
+    return;
+  }
+  const container = document.getElementById('adminChatsList');
+  if (!container) return;
+
+  const entries = Object.entries(allChatThreads || {});
+  if (!entries.length) {
+    container.innerHTML = '<p style="color:#94a3b8">এখনো কোনো চ্যাট আসেনি।</p>';
+    return;
+  }
+
+  const sortedThreads = entries
+    .map(([threadId, msgsObj]) => {
+      const msgs = msgsObj ? Object.entries(msgsObj).map(([k, v]) => ({ _key: k, ...v })).sort((a, b) => (a.time || 0) - (b.time || 0)) : [];
+      const lastTime = msgs.length ? (msgs[msgs.length - 1].time || 0) : 0;
+      const studentName = (msgs.find(m => m.studentName) && msgs.find(m => m.studentName).studentName) || threadId;
+      return { threadId, msgs, lastTime, studentName };
+    })
+    .filter(t => t.msgs.length > 0)
+    .sort((a, b) => b.lastTime - a.lastTime);
+
+  if (!sortedThreads.length) {
+    container.innerHTML = '<p style="color:#94a3b8">এখনো কোনো চ্যাট আসেনি।</p>';
+    return;
+  }
+
+  container.innerHTML = sortedThreads.map(th => {
+    const safeId = esc(th.threadId);
+    const msgsHtml = th.msgs.map(m => {
+      const cls = m.sender === 'user' ? 'c-user' : (m.sender === 'admin' ? 'c-admin' : 'c-bot');
+      const prefix = m.sender === 'user' ? '👤 ইউজার: ' : (m.sender === 'admin' ? '👨‍🏫 অ্যাডমিন: ' : '🤖 বট: ');
+      return `<div class="c-msg ${cls}"><b>${prefix}</b>${esc(m.text)}</div>`;
+    }).join('');
+
+    return `
+      <div class="chat-thread-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b style="color:#38bdf8">💬 ${esc(th.studentName)}</b>
+          <span style="font-size:11.5px;color:#94a3b8">${safeId}</span>
+        </div>
+        <div class="chat-log">${msgsHtml}</div>
+        <div style="display:flex;gap:8px">
+          <input id="adminReplyInput_${safeId}" type="text" placeholder="সরাসরি উত্তর লিখুন...">
+          <button class="btn btn-green" onclick="sendAdminChatReply('${safeId}')">রিপ্লাই দিন</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function sendAdminChatReply(threadId) {
+  const input = document.getElementById('adminReplyInput_' + threadId);
+  if (!input) return;
+  const replyText = input.value.trim();
+  if (!replyText) return alert('উত্তর লিখুন।');
+  input.value = '';
+
+  const msgObj = {
+    sender: 'admin',
+    text: replyText,
+    threadId,
+    time: Date.now()
+  };
+
+  if (!allChatThreads[threadId]) allChatThreads[threadId] = {};
+  const msgKey = 'ADM_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5);
+  allChatThreads[threadId][msgKey] = msgObj;
+  lastChatsSignature = getChatsSignature(allChatThreads);
+  renderAdminChats(true);
+
+  try {
+    await fetch(`${DB_URL}/psa_chats/${threadId}/${msgKey}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(msgObj)
+    });
+  } catch (_) {}
 }
 
 async function pullAdminData() {
   if (!isLogged) return;
   try {
-    const [appsRes, settingsRes, resetsRes] = await Promise.all([
+    const [appsRes, settingsRes, resetsRes, sylRes, chatsRes] = await Promise.all([
       fetch(`${DB_URL}/psa_applications.json`),
       fetch(`${DB_URL}/psa_settings.json`),
-      fetch(`${DB_URL}/psa_reset_requests.json`)
+      fetch(`${DB_URL}/psa_reset_requests.json`),
+      fetch(`${DB_URL}/psa_syllabus.json`),
+      fetch(`${DB_URL}/psa_chats.json`)
     ]);
 
     let nextApps = applications;
@@ -549,6 +856,27 @@ async function pullAdminData() {
       }
     }
 
+    if (sylRes.ok) {
+      const sVal = await sylRes.json();
+      syllabusList = sVal ? Object.entries(sVal).map(([k, v]) => ({ _key: k, ...v })).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)) : [];
+      try { localStorage.setItem(STORE_SYLLABUS_KEY, JSON.stringify(syllabusList)); } catch (_) {}
+      const sSig = getSyllabusSignature(syllabusList);
+      if (sSig !== lastSyllabusSignature) {
+        lastSyllabusSignature = sSig;
+        renderAdminSyllabus();
+      }
+    }
+
+    if (chatsRes.ok) {
+      const cVal = await chatsRes.json();
+      allChatThreads = cVal || {};
+      const cSig = getChatsSignature(allChatThreads);
+      if (cSig !== lastChatsSignature) {
+        lastChatsSignature = cSig;
+        renderAdminChats(false);
+      }
+    }
+
     if (settingsRes.ok) {
       const s = await settingsRes.json();
       if (s) {
@@ -564,11 +892,15 @@ async function pullAdminData() {
 function startAdminSync() {
   applications = getLocalApps();
   resetReqs = getLocalResets();
+  syllabusList = JSON.parse(localStorage.getItem(STORE_SYLLABUS_KEY) || '[]');
   lastAppsSignature = getAppsSignature(applications);
   lastResetsSignature = getResetsSignature(resetReqs);
+  lastSyllabusSignature = getSyllabusSignature(syllabusList);
   loadSettingsIntoForm(JSON.parse(localStorage.getItem(STORE_SETTINGS_KEY) || '{}'));
   renderAdminUI(true);
   renderResetRequests(true);
+  renderAdminSyllabus();
+  renderAdminChats(true);
   pullAdminData();
   if (syncTimer) clearInterval(syncTimer);
   syncTimer = setInterval(pullAdminData, 3000);
